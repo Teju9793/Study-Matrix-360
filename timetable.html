@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="kn">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+<title>Time Table – Study Matrix 360</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X4DGJNQ1DB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-X4DGJNQ1DB');
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+:root {
+  --status-bar-height: 0px;
+  --bg:#030d12;--bg2:#041018;--surface:#071820;--card:#0a2030;
+  --border:rgba(0,200,160,0.1);--t1:#00e5c0;--t2:#00b89c;--t3:#00ffd5;
+  --t4:#0ec4b0;--muted:#4a7a72;--text:#d0fff5;--dim:#1a3a45;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{width:100%;height:100%;}
+body{width:100%;min-height:100vh;height:auto;overflow-x:hidden;background:var(--bg);color:var(--text);font-family:'Sora',system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding-top:0;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 90% 50% at 50% -5%,rgba(0,200,160,0.13) 0%,transparent 60%),radial-gradient(ellipse 60% 60% at 100% 40%,rgba(0,160,130,0.08) 0%,transparent 55%),radial-gradient(ellipse 50% 50% at 0% 70%,rgba(0,180,150,0.07) 0%,transparent 55%),radial-gradient(ellipse 70% 40% at 50% 110%,rgba(0,100,80,0.15) 0%,transparent 60%);animation:oceanBreath 10s ease-in-out infinite alternate;}
+@keyframes oceanBreath{0%{opacity:.7;transform:scaleY(1)}100%{opacity:1;transform:scaleY(1.04)}}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(1.5px 1.5px at 15% 25%,rgba(0,229,192,0.7),transparent),radial-gradient(1px 1px at 75% 12%,rgba(0,200,160,0.5),transparent),radial-gradient(2px 2px at 45% 65%,rgba(0,255,213,0.4),transparent),radial-gradient(1px 1px at 88% 72%,rgba(0,180,145,0.5),transparent),radial-gradient(1.5px 1.5px at 30% 85%,rgba(0,229,192,0.5),transparent),radial-gradient(1px 1px at 62% 38%,rgba(0,210,170,0.4),transparent),radial-gradient(2px 2px at 8% 55%,rgba(0,255,213,0.35),transparent),radial-gradient(1px 1px at 93% 90%,rgba(0,200,160,0.4),transparent);animation:drift 18s ease-in-out infinite alternate;}
+@keyframes drift{0%{transform:translateY(0) translateX(0)}100%{transform:translateY(-20px) translateX(6px)}}
+.app::after{content:'';position:fixed;bottom:0;left:0;right:0;height:3px;z-index:0;background:linear-gradient(90deg,transparent,var(--t1),var(--t3),var(--t2),transparent);background-size:200% 100%;animation:waveFlow 4s linear infinite;pointer-events:none;}
+@keyframes waveFlow{0%{background-position:0% 0%}100%{background-position:200% 0%}}
+.app{min-height:100vh;overflow-x:hidden;overflow-y:auto;position:relative;z-index:1;}
+.topbar{position:fixed;top:0;left:0;right:0;height:62px;padding-top:0;margin-top:0;display:flex;align-items:center;justify-content:space-between;padding-left:18px;padding-right:18px;background:rgba(3,13,18,0.88);backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px);border-bottom:1px solid rgba(0,200,160,0.08);z-index:9999;}
+.topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--t1),var(--t3),var(--t2),transparent);background-size:200% 100%;animation:waveFlow 4s linear infinite;box-shadow:0 0 8px rgba(0,229,192,0.3);}
+.title{font-size:22px;font-weight:800;letter-spacing:-0.3px;white-space:nowrap;}
+.title em{font-style:normal;background:linear-gradient(90deg,var(--t1),var(--t3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.backBtn{padding:7px 16px;font-size:13px;font-weight:600;background:rgba(0,80,65,0.25);border:1px solid rgba(0,200,160,0.2);color:var(--t1);border-radius:12px;cursor:pointer;transition:all .2s;letter-spacing:0.2px;font-family:'Sora',sans-serif;}
+.backBtn:hover{background:rgba(0,100,80,0.35);border-color:var(--t1);box-shadow:0 0 14px rgba(0,229,192,0.18);}
+.main{padding-top:72px;padding-bottom:40px;min-height:calc(100vh - 72px);overflow-y:auto;}
+#timeView{display:flex;width:100%;align-items:center;flex-direction:column;justify-content:flex-start;}
+#timeView h2{font-size:20px;font-weight:800;letter-spacing:-0.3px;background:linear-gradient(90deg,var(--t1),var(--t3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite;margin:16px 0 12px;text-align:center;width:100%;}
+@keyframes shimmer{to{background-position:200% center}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.cardBtn{background:linear-gradient(135deg,var(--t1),color-mix(in srgb,var(--t1) 80%,#fff));color:#030d12;padding:9px 18px;border-radius:12px;border:none;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.2px;font-family:'Sora',sans-serif;box-shadow:0 4px 16px rgba(0,229,192,0.28);transition:all .25s;}
+.cardBtn:hover{transform:scale(1.07);box-shadow:0 6px 24px rgba(0,229,192,0.48);}
+#timetableImg{width:92%;max-width:640px;border-radius:18px;border:1px solid rgba(0,180,145,0.14);box-shadow:0 20px 60px rgba(0,0,0,0.7),0 0 40px rgba(0,150,120,0.07);cursor:pointer;transition:all .3s;display:block;margin:12px auto;}
+#timetableImg:hover{transform:scale(1.012);box-shadow:0 26px 70px rgba(0,0,0,0.75),0 0 50px rgba(0,160,130,0.12);}
+#imgPopup{background:rgba(3,10,14,0.97)!important;backdrop-filter:blur(24px);}
+img{touch-action:pinch-zoom;}
+@media(max-width:599px){.title{font-size:18px;}}
+</style>
+</head>
+<body>
+<div class="app" id="appShell">
+  <div class="topbar" id="topbarEl">
+    <div class="title" style="color:#00eaff;text-shadow:0 0 12px #00eaff;">
+      Study <em>Matrix</em>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center;">
+      <button class="backBtn" id="backBtn" onclick="handleBack()">‹ Back</button>
+    </div>
+  </div>
+  <main class="main">
+    <section id="timeView">
+      <h2 id="timeViewTitle" style="color:#00bfff;text-shadow:0 0 10px #00ffff;margin-top:10px;text-align:center;width:100%;">Choose Your Section</h2>
+      <div id="sectionButtons" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:0 14px;"></div>
+      <div id="timetableArea" style="margin-top:18px;display:none;flex-direction:column;align-items:center;width:100%;">
+        <h3 id="sectionName" style="color:#00ffff;margin-bottom:6px;"></h3>
+        <img id="timetableImg" src="" alt="Time Table"
+             onclick="openFullscreen(this.src)"
+             style="width:92%;max-width:650px;border-radius:12px;box-shadow:0 0 20px #00ffff;margin:12px 0;touch-action:pinch-zoom;" />
+        <button class="cardBtn" style="margin-top:10px;" onclick="goBackToSections()">‹ All Sections</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="imgPopup" style="display:none;position:fixed;inset:0;background:black;z-index:9999;overflow:auto;text-align:center;">
+  <button onclick="closePopup()" style="position:fixed;top:20px;right:20px;background:#00ffff;color:black;padding:10px 15px;border:none;border-radius:8px;font-size:18px;z-index:10000;cursor:pointer;">✖</button>
+  <button onclick="rotateImage()" style="position:fixed;top:20px;left:20px;background:#00ffff;color:black;padding:10px 15px;border:none;border-radius:8px;font-size:18px;z-index:10000;cursor:pointer;">🔄</button>
+  <div style="height:100vh;display:flex;align-items:center;justify-content:center;">
+    <img id="popupImg" style="max-width:95vw;max-height:90vh;width:auto;height:auto;transition:0.3s;transform:rotate(90deg);touch-action:pinch-zoom;">
+  </div>
+</div>
+
+<script>
+  /* ── STATE ── */
+  // States: 'sections' | 'timetable'
+  var _state = 'sections';
+
+  /* ── SYSTEM BACK NAVIGATION (Android/PWA) ── */
+  function pushHistoryState(state) {
+    history.pushState({ smState: state }, '');
+  }
+  // Push initial state so back button has something to pop
+  pushHistoryState('sections');
+
+  window.addEventListener('popstate', function(e) {
+    var area = document.getElementById('timetableArea');
+    if (area && area.style.display === 'flex') {
+      goBackToSections();
+      pushHistoryState('sections');
+    } else {
+      window.location.href = 'dashboard.html';
+    }
+  });
+
+  /* ── TIMETABLE ── */
+  var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  var sectionBox = document.getElementById("sectionButtons");
+  sectionBox.innerHTML = letters.map(function(l) {
+    return '<button class="cardBtn" style="padding:8px 12px;margin:4px" onclick="showTimetable(\'' + l + '\')">' + l + ' Section</button>';
+  }).join('');
+
+  function showTimetable(section) {
+    document.getElementById('sectionButtons').style.display = 'none';
+    document.getElementById('timeViewTitle').style.display  = 'none';
+    var area = document.getElementById('timetableArea');
+    var img  = document.getElementById('timetableImg');
+    var name = document.getElementById('sectionName');
+    area.style.display = 'flex';
+    name.textContent   = section + " Section Timetable";
+    img.src = 'timetable/' + section + '.jpg';
+    img.style.display = 'block';
+    _state = 'timetable';
+    pushHistoryState('timetable');
+  }
+
+  function goBackToSections() {
+    document.getElementById('timetableArea').style.display  = 'none';
+    document.getElementById('sectionButtons').style.display = 'flex';
+    document.getElementById('timeViewTitle').style.display  = 'block';
+    _state = 'sections';
+  }
+
+  /* ── WEB BACK BUTTON ── */
+  function handleBack() {
+    var area = document.getElementById('timetableArea');
+    if (area.style.display === 'flex') {
+      goBackToSections();
+    } else {
+      window.location.href = 'dashboard.html';
+    }
+  }
+
+  /* ── IMAGE POPUP ── */
+  var currentRotation = 90;
+  function openFullscreen(src) {
+    var img = document.getElementById('popupImg');
+    img.src = src;
+    currentRotation = 90;
+    img.style.transform = "rotate(90deg)";
+    document.getElementById('imgPopup').style.display = 'block';
+    pushHistoryState('popup');
+  }
+  function closePopup() { document.getElementById('imgPopup').style.display = 'none'; }
+  function rotateImage() {
+    currentRotation += 90;
+    if (currentRotation >= 360) currentRotation = 0;
+    document.getElementById("popupImg").style.transform = 'rotate(' + currentRotation + 'deg)';
+  }
+
+  /* ── TOPBAR SPACING FIX ── */
+  (function() {
+    function fixTopSpacing() {
+      var topbar = document.querySelector('.topbar');
+      var main   = document.querySelector('.main');
+      if (topbar) { topbar.style.position='fixed';topbar.style.top='0';topbar.style.height='62px';topbar.style.paddingTop='0';topbar.style.marginTop='0'; }
+      if (main)   { main.style.paddingTop='72px'; }
+      document.body.style.paddingTop='0';
+      document.body.style.marginTop='0';
+      document.documentElement.style.paddingTop='0';
+    }
+    fixTopSpacing();
+    window.addEventListener('resize', fixTopSpacing);
+    window.addEventListener('orientationchange', function() { setTimeout(fixTopSpacing, 100); });
+  })();
+</script>
+</body>
+</html>

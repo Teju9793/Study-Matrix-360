@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>XOX - Neon Pro</title>
+<style>
+:root{--status-bar-height:max(24px, env(safe-area-inset-top));--neon:#00f0ff;--neon2:#00d39c;--bg:#020217;--panel:rgba(0,240,255,0.12);--accent-glow:0 0 24px #00f0ff;}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif;color:var(--neon);-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;}
+.app{width:100%;max-width:var(--max-width);height:100vh;padding:16px;position:relative;overflow:hidden}
+.backBtn{position:fixed;top:calc(12px + max(24px, env(safe-area-inset-top)));right:14px;z-index:99999;padding:7px 16px;font-size:13px;font-weight:600;background:rgba(0,80,65,0.25);border:1px solid rgba(0,200,160,0.2);color:#00e5c0;border-radius:12px;cursor:pointer;transition:all .2s;font-family:'Sora',Inter,sans-serif;backdrop-filter:blur(10px);}
+.backBtn:hover{background:rgba(0,100,80,0.35);border-color:#00e5c0;box-shadow:0 0 14px rgba(0,229,192,0.18);}
+.backBtn:active{transform:scale(0.97);}
+.title{font-size:34px;color:#22e0c4;font-weight:800;text-shadow:0 0 12px #22e0c4aa;}
+.center{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:calc(24px + max(24px, env(safe-area-inset-top)));}
+.btn{width:80%;max-width:260px;padding:14px 0;background:linear-gradient(90deg,#00f0ff,#00d39c);color:#003a46;font-weight:700;border-radius:14px;border:none;font-size:18px;box-shadow:0 0 14px #00f0ff55;text-align:center;}
+.btn:active{transform:scale(.98)}
+#game{display:none;position:relative;z-index:2;margin-top:calc(80px + max(0px, env(safe-area-inset-top)));}
+#status{font-size:28px;text-align:center;margin-top:18px;text-shadow:var(--accent-glow)}
+#gameBoard{width:100%;max-width:360px;margin:16px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:var(--cell-gap)}
+.cell{width:90px;height:90px;background:rgba(0,240,255,0.08);border:2.5px solid var(--neon);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:48px;line-height:1;box-shadow:0 0 18px #00f0ff66,inset 0 0 18px #00d39c33;cursor:pointer;transition:transform 0.1s;}
+.cell:active{transform:scale(.97);}
+.cell.disabled{pointer-events:none;opacity:0.95}
+.cell.win{animation:pop 900ms infinite alternate;box-shadow:0 0 32px var(--neon)}
+@keyframes pop{from{transform:translateY(-4px)}to{transform:translateY(0)}}
+.panel{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:8px}
+.score{background:#022c36;padding:10px 15px;border-radius:12px;font-size:16px;color:#22e0c4;box-shadow:0 0 10px #00f0ff33;}
+.controls{display:flex;gap:8px;justify-content:center;margin-top:40px}
+.small{padding:8px 10px;font-size:13px;width:auto}
+.overlay{position:fixed;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:999;display:none}
+.toast{background:rgba(0,0,0,0.6);padding:16px 22px;border-radius:12px;color:var(--neon);font-size:18px;box-shadow:var(--accent-glow);text-align:center}
+#confetti{z-index:9999;position:fixed;top:0;left:0;pointer-events:none;}
+.levelScreen{display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding-top:calc(40px + max(0px, env(safe-area-inset-top)));}
+.levelBtn{width:80%;max-width:260px;padding:14px 0;background:linear-gradient(90deg,#00f0ff,#00d39c);color:#003a46;font-weight:700;border-radius:14px;border:none;font-size:18px;box-shadow:0 0 14px #00f0ff55;text-align:center;margin:10px auto;display:block;}
+.levelBtn:active{transform:scale(.98);}
+.modeBtn{width:230px;padding:14px 10px;margin:10px auto;display:block;font-size:20px;font-weight:600;color:#001f2f;background:linear-gradient(135deg,#00f8ff,#00ffa9);border:none;border-radius:16px;box-shadow:0 0 18px #00f0ff88;cursor:pointer;transition:0.2s ease;}
+.modeBtn:active{transform:scale(0.96);}
+.neonInput{width:265px;padding:12px;margin-top:10px;font-size:18px;color:#00eaff;background:rgba(0,240,255,0.08);border:2px solid #00eaff;border-radius:12px;text-align:center;box-shadow:0 0 12px #00eaff55;}
+#onlinePage{height:100vh;overflow-y:auto;padding-bottom:20px;display:flex;flex-direction:column;justify-content:flex-start;position:relative;z-index:1;top:calc(40px + max(0px, env(safe-area-inset-top)));}
+#onlinePage.hidden{display:none !important;pointer-events:none !important;}
+#onlineWaitingBox{display:none;margin:20px auto;background:rgba(0,240,255,0.12);padding:18px;width:260px;border-radius:14px;box-shadow:0 0 14px #00f0ff77;}
+#inviteBox{display:none;margin:12px auto;width:280px;text-align:center;}
+#inviteCode{font-size:22px;font-weight:700;padding:10px 8px;border-radius:10px;background:rgba(0,240,255,0.06);box-shadow:0 0 12px #00eaff22;color:#00f0ff;}
+#historyPage{display:none;margin-top:calc(80px + max(0px, env(safe-area-inset-top)));text-align:center;color:#00f0ff;}
+#opponentStatus{color:#00eaff;text-align:center;font-size:14px;margin-top:6px;}
+#thinkingIndicator{display:none;text-align:center;margin-top:4px;color:#00eaff;font-size:14px;}
+#thinkingIndicator .dot{opacity:0.2;font-weight:700;color:#00eaff;animation:blink 1s infinite;margin:0 1px;}
+#thinkingIndicator .dot:nth-child(1){animation-delay:0s;}
+#thinkingIndicator .dot:nth-child(2){animation-delay:0.15s;}
+#thinkingIndicator .dot:nth-child(3){animation-delay:0.3s;}
+@keyframes blink{0%{opacity:0.15;transform:translateY(0px);}50%{opacity:1;transform:translateY(-3px);}100%{opacity:0.15;transform:translateY(0px);}}
+#onlineResetBtn{display:none;margin:14px auto;}
+</style>
+</head>
+<body>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+import{getDatabase,ref,set,push,onValue,update,get}from"https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+const firebaseConfig={apiKey:"AIzaSyBalHEO3Hn44955gitMZMvVbCU4dqHiEnU",authDomain:"studymatrix360.firebaseapp.com",databaseURL:"https://studymatrix360-default-rtdb.asia-southeast1.firebasedatabase.app/",projectId:"studymatrix360",storageBucket:"studymatrix360.firebasestorage.app",messagingSenderId:"154185638216",appId:"1:154185638216:web:eb714b8b339c4fca16d37d",measurementId:"G-F6206WC533"};
+const app=initializeApp(firebaseConfig);const db=getDatabase(app);
+window.db=db;window.ref=ref;window.set=set;window.update=update;window.get=get;window.onValue=onValue;
+function createRoom(){window.prevBoard=null;currentRoom=Math.floor(100000+Math.random()*900000).toString();myMark="X";myTurn=true;set(ref(db,"rooms/"+currentRoom),{board:["","","","","","","","",""],current:"X",player1:true,player2:null,status:"waiting"});showOnlineWaiting(currentRoom);showInviteUI(currentRoom);}
+function joinRoom(roomId,playerName){const playersRef=ref(db,`rooms/${roomId}/players/${playerName}`);set(playersRef,{joinedAt:Date.now(),isHost:false});}
+window.createRoom=createRoom;window.joinRoom=joinRoom;
+</script>
+<div class="app">
+  <button class="backBtn" onclick="universalBack()">‹ Back</button>
+  <div id="home" class="center">
+    <div class="title">XOX</div>
+    <button class="modeBtn" onclick="startFriend()">🤝 Play With Friend</button>
+    <button class="modeBtn" onclick="openLevels()">🤖 Play With AI</button>
+    <button class="modeBtn" onclick="openOnlinePage()">🌐 Play Online</button>
+    <button class="modeBtn" onclick="openHistoryPage()">📜 History</button>
+  </div>
+  <div id="levels" class="levelScreen">
+    <div class="title">Choose Level</div>
+    <button class="levelBtn" onclick="startAI('easy')">Easy</button>
+    <button class="levelBtn" onclick="startAI('medium')">Medium</button>
+    <button class="levelBtn" onclick="startAI('hard')">Hard</button>
+  </div>
+  <div id="game">
+    <div id="status">Turn: X</div>
+    <div id="gameBoard"></div>
+    <p id="opponentStatus">● Checking opponent...</p>
+    <p id="thinkingIndicator">Opponent is thinking <span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></p>
+    <div class="panel">
+      <div class="score" id="scoreX">X: 0</div>
+      <div class="score" id="scoreO">O: 0</div>
+      <div class="score" id="scoreD">Draw: 0</div>
+    </div>
+    <button id="onlineResetBtn" class="btn small">Play Again</button>
+    <div class="controls"><button class="small btn" onclick="resetScores()">Reset Scores</button></div>
+  </div>
+  <div class="overlay" id="overlay"><div class="toast" id="toastText">Congratulations!</div></div>
+  <canvas id="confetti"></canvas>
+  <div id="historyPage">
+    <h2 style="font-size:30px;">📜 Game History</h2>
+    <h3>🤝 Play With Friend</h3>
+    <p id="frX">X Wins: 0</p><p id="frO">O Wins: 0</p><p id="frD">Draws: 0</p>
+    <br><br>
+    <h3>🤖 Play With AI</h3>
+    <p id="aiP">You Win: 0</p><p id="aiA">AI Wins: 0</p><p id="aiD">Draws: 0</p>
+  </div>
+  <div id="onlinePage" style="display:none;">
+    <h2>🌐 Online Play</h2>
+    <div id="onlineWaitingBox" class="onlineRoomBox"></div>
+    <div id="inviteBox">
+      <div id="inviteCode">Code: <span id="inviteCodeText">000000</span></div>
+      <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;">
+        <button class="modeBtn" id="copyInviteBtn" onclick="copyRoomCode()">📋 Copy</button>
+        <button class="modeBtn" id="shareInviteBtn" onclick="shareRoomCode()">🔗 Share</button>
+      </div>
+      <p id="inviteStatus" style="margin-top:10px;font-size:14px;color:#bff;">Status: <span id="inviteStatusText">Waiting</span></p>
+    </div>
+    <button class="modeBtn" onclick="createRoom()">➕ Create Room</button>
+    <br><br>
+    <input id="joinCodeInput" class="neonInput" placeholder="Enter Room Code">
+    <button class="modeBtn" onclick="joinOnlineRoom()">🔗 Join Room</button>
+  </div>
+</div>
+<script>
+let board=Array(9).fill(''),current='X',aiMode=false,difficulty='easy',gameOver=false;
+let scores={X:0,O:0,D:0},friendScores={X:0,O:0,D:0},aiScores={you:0,ai:0,D:0};
+let moveLog=[],history=JSON.parse(localStorage.getItem('xox_history_tejas')||'[]');
+let emojiTheme={X:'❌',O:'⭕'};
+const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+const home=document.getElementById('home'),levels=document.getElementById('levels'),gameScreen=document.getElementById('game');
+const opponentStatusEl=document.getElementById("opponentStatus"),boardEl=document.getElementById('gameBoard'),statusEl=document.getElementById('status');
+const overlay=document.getElementById('overlay'),toastText=document.getElementById('toastText');
+const scoreXEl=document.getElementById('scoreX'),scoreOEl=document.getElementById('scoreO'),scoreDEl=document.getElementById('scoreD');
+const historyPage=document.getElementById('historyPage'),onlinePage=document.getElementById("onlinePage"),onlineWaitingBox=document.getElementById("onlineWaitingBox");
+let currentRoom=null,myMark=null,myTurn=false;
+updateScoreUI();renderBoard();
+function universalBack(){if(currentRoom!==null){leaveOnlineGame();return;}if(onlinePage.style.display==="block"){window._waitingListenerAttachedFor=null;window._roomListenerAttachedFor=null;window.prevBoard=null;hideInviteUI();currentRoom=null;myMark=null;myTurn=false;onlinePage.style.display="none";showHome();return;}if(historyPage.style.display==="block"){historyPage.style.display="none";showHome();return;}if(gameScreen.style.display==="block"){if(aiMode){gameScreen.style.display="none";levels.style.display="flex";return;}gameScreen.style.display="none";showHome();return;}if(levels.style.display==="flex"){levels.style.display="none";showHome();return;}window.history.back();}
+function showHome(){home.style.display='flex';levels.style.display='none';gameScreen.style.display='none';}
+function openLevels(){home.style.display='none';levels.style.display='flex';gameScreen.style.display='none';}
+function startFriend(){opponentStatusEl.style.display="none";aiMode=false;startGame();}
+function startAI(level){opponentStatusEl.style.display="none";aiMode=true;difficulty=level;startGame();}
+function startGame(){home.style.display='none';levels.style.display='none';gameScreen.style.display='block';board=Array(9).fill('');gameOver=false;current='X';statusEl.innerHTML=(current===myMark)?'⭐ Your Turn ('+current+')':'⏳ Turn ('+current+')';renderBoard();}
+function renderBoard(){boardEl.innerHTML='';board.forEach((v,i)=>{const cell=document.createElement('div');cell.className='cell'+(v?' disabled':'');cell.dataset.index=i;if(v==='X'||v==='O'){cell.innerText=emojiTheme[v];}else{cell.innerText=v?v:'';}cell.onclick=()=>clickCell(i);boardEl.appendChild(cell);});}
+function recordMove(index,mark){moveLog.push({index,mark});}
+function clickCell(i){if(currentRoom!==null){if(!myTurn){showToast("Wait for your turn!");return;}if(board[i]!=="")return;board[i]=myMark;if(checkWinnerOnline(myMark)){update(ref(db,"rooms/"+currentRoom),{status:"win",winner:myMark,board:board});setTimeout(()=>{update(ref(db,"rooms/"+currentRoom),{resetRound:true,status:"playing",board:["","","","","","","","",""],current:"X"});},1200);return;}if(board.filter(v=>v!=='').length===9){update(ref(db,"rooms/"+currentRoom),{status:"draw",board:board});setTimeout(()=>{update(ref(db,"rooms/"+currentRoom),{resetRound:true,status:"playing",board:["","","","","","","","",""],current:"X"});},1200);return;}update(ref(db,"rooms/"+currentRoom),{board:board,current:(myMark==="X")?"O":"X"});myTurn=false;return;}if(gameOver||board[i]!==''||(aiMode&&current==='O'))return;board[i]=emojiTheme[current];recordMove(i,current);renderBoard();if(checkWinner())return;switchPlayer();if(aiMode&&current==='O')setTimeout(aiTurn,360);}
+function switchPlayer(){current=current==='X'?'O':'X';statusEl.innerHTML=(current===myMark)?'⭐ Your Turn ('+current+')':'⏳ Turn ('+current+')';}
+function aiTurn(){if(gameOver)return;let move;if(difficulty==='easy'){move=randomMove();}else if(difficulty==='medium'){move=findWinningMove(emojiTheme['O'])??findWinningMove(emojiTheme['X'])??randomMove();}else{move=minimaxMove();}if(move==null)move=randomMove();board[move]=emojiTheme['O'];recordMove(move,'O');renderBoard();checkWinner();if(!gameOver)switchPlayer();}
+function randomMove(){const empties=board.map((v,i)=>v===''?i:null).filter(x=>x!==null);if(empties.length===0)return null;return empties[Math.floor(Math.random()*empties.length)];}
+function findWinningMove(mark){for(const[a,b,c]of wins){if(board[a]===mark&&board[b]===mark&&board[c]==='')return c;if(board[a]===mark&&board[c]===mark&&board[b]==='')return b;if(board[b]===mark&&board[c]===mark&&board[a]==='')return a;}return null;}
+function checkWinner(){for(const combo of wins){const[a,b,c]=combo;if(board[a]&&board[a]===board[b]&&board[b]===board[c]){const winnerMark=board[a];const winner=(winnerMark===emojiTheme['X'])?'X':'O';onWin(winner,combo);return true;}}if(!board.includes('')){onDraw();return true;}return false;}
+function onWin(winner,combo){gameOver=true;const cells=document.querySelectorAll('.cell');combo.forEach(i=>cells[i].classList.add('win'));scores[winner]+=1;updateScoreUI();if(!aiMode){if(winner==="X")friendScores.X++;else friendScores.O++;}else{if(winner==="X")aiScores.you++;else aiScores.ai++;}if(!aiMode){showToast(winner==="X"?"🎉 X Wins! 🎉":"🎉 O Wins! 🎉");}else{const aiMsgs=["Nice move!","Smart!","Unlucky!","You can't stop me 😎","Great game!"];const msg=winner==="X"?"🎉 Congratulations! You Win 🎉":"🤖 AI Wins! "+aiMsgs[Math.floor(Math.random()*aiMsgs.length)];showToast(msg);}launchConfetti();vib(200);moveLog=[];setTimeout(()=>startRoundAfterWin(),1400);}
+function onDraw(){gameOver=true;scores['D']+=1;updateScoreUI();showToast("It's a Draw!");vib(150);moveLog=[];setTimeout(()=>startRoundAfterWin(),1200);if(!aiMode)friendScores.D++;else aiScores.D++;}
+function startRoundAfterWin(){hideToast();board=Array(9).fill('');gameOver=false;current='X';statusEl.innerHTML=(current===myMark)?'⭐ Your Turn ('+current+')':'⏳ Turn ('+current+')';renderBoard();}
+function showToast(txt){toastText.innerText=txt;overlay.style.display='flex';setTimeout(()=>overlay.style.display='none',1100);}
+function hideToast(){overlay.style.display='none';}
+function updateScoreUI(){scoreXEl.innerText='X: '+scores.X;scoreOEl.innerText='O: '+scores.O;scoreDEl.innerText='Draw: '+scores.D;}
+function resetScores(){scores={X:0,O:0,D:0};updateScoreUI();vib(80);}
+function vib(ms){if(navigator.vibrate)navigator.vibrate(ms);}
+function launchConfetti(){const canvas=document.getElementById('confetti');canvas.style.display='block';canvas.width=window.innerWidth;canvas.height=window.innerHeight;const ctx=canvas.getContext('2d');const pieces=[];for(let i=0;i<180;i++){pieces.push({x:Math.random()*canvas.width,y:-Math.random()*canvas.height,vx:(Math.random()-0.5)*4,vy:Math.random()*9+3,s:Math.random()*6+4,c:`hsl(${Math.random()*360},80%,60%)`});}let t=0;const id=setInterval(()=>{t++;ctx.clearRect(0,0,canvas.width,canvas.height);for(const p of pieces){p.x+=p.vx;p.y+=p.vy;p.vy+=0.12;ctx.fillStyle=p.c;ctx.fillRect(p.x,p.y,p.s,p.s);}if(t>70){clearInterval(id);ctx.clearRect(0,0,canvas.width,canvas.height);canvas.style.display='none';}},16);}
+function openHistoryPage(){home.style.display="none";gameScreen.style.display="none";levels.style.display="none";historyPage.style.display="block";document.getElementById("frX").innerText="X Wins: "+friendScores.X;document.getElementById("frO").innerText="O Wins: "+friendScores.O;document.getElementById("frD").innerText="Draws: "+friendScores.D;document.getElementById("aiP").innerText="You Win: "+aiScores.you;document.getElementById("aiA").innerText="AI Wins: "+aiScores.ai;document.getElementById("aiD").innerText="Draws: "+aiScores.D;}
+function joinOnlineRoom(){const code=document.getElementById("joinCodeInput").value.trim();if(code.length!==6){showToast("Invalid Room Code");return;}const roomRef=ref(db,"rooms/"+code);get(roomRef).then((snapshot)=>{const data=snapshot.val();if(!data){showToast("Room not found");return;}if(data.player2===true){showToast("Room already full");return;}update(roomRef,{player2:true});window.prevBoard=null;startOnlineGame(code,"O");});}
+function showOnlineWaiting(roomId){onlinePage.classList.remove("hidden");onlinePage.style.display="block";onlineWaitingBox.innerHTML=`<p style="font-size:20px;">Room Created!</p><p style="font-size:26px;font-weight:700;">Code: ${roomId}</p><p>Waiting for player...</p>`;onlineWaitingBox.style.display="block";window.keepWaiting=true;const roomRef=ref(db,"rooms/"+roomId+"/player2");if(window._waitingListenerAttachedFor===roomId)return;window._waitingListenerAttachedFor=roomId;onValue(roomRef,(snapshot)=>{const val=snapshot.val();if(val===null||val===undefined)return;if(val===true){window.keepWaiting=false;onlineWaitingBox.style.display="none";hideInviteUI();window._waitingListenerAttachedFor=null;startOnlineGame(roomId,"X");}});}
+function startOnlineGame(roomId,symbol){window._waitingListenerAttachedFor=null;window._roomListenerAttachedFor=null;window.prevBoard=null;onlinePage.classList.add("hidden");if(currentRoom===roomId&&gameScreen.style.display==="block")return;currentRoom=roomId;myMark=symbol;myTurn=(symbol==="X");window.prevBoard=null;hideInviteUI();home.style.display="none";levels.style.display="none";historyPage.style.display="none";onlinePage.style.display="none";gameScreen.style.display="block";gameScreen.style.zIndex="99";update(ref(db,"rooms/"+roomId),{[symbol+"_online"]:true}).catch(err=>console.warn("Presence update failed:",err));const roomRef=ref(db,"rooms/"+roomId);if(window._roomListenerAttachedFor===roomId)return;window._roomListenerAttachedFor=roomId;onValue(roomRef,(snapshot)=>{const room=snapshot.val();if(!room)return;let opponent=(myMark==="X")?"O":"X";if(room[opponent+"_online"]){document.getElementById("opponentStatus").innerHTML="<span style='color:#0f0;'>●</span> Opponent Online";}else{document.getElementById("opponentStatus").innerHTML="<span style='color:#ff0;'>●</span> Connecting...";}if(room.player1&&room.player2){document.getElementById("opponentStatus").innerHTML="<span style='color:#0f0;'>●</span> Opponent Joined";}if(room.left){document.getElementById("opponentStatus").innerHTML="<span style='color:#f00;'>●</span> Opponent Left";}const newBoard=room.board||["","","","","","","","",""];const newCurrent=room.current||"X";if(!window.prevBoard)window.prevBoard=JSON.stringify(newBoard);const prevBoardStr=window.prevBoard;const newBoardStr=JSON.stringify(newBoard);board=newBoard;current=newCurrent;renderBoard();window.prevBoard=newBoardStr;myTurn=(current===myMark);if(myTurn){statusEl.innerText="⭐ Your Turn ("+myMark+")";}else{statusEl.innerText="⏳ Opponent Turn ("+current+")";}if(current!==myMark){if(newBoardStr!==prevBoardStr)hideThinkingIndicator();else showThinkingIndicator();}else{hideThinkingIndicator();}if(room.resetRound){window.onlineWinShown=false;window.onlineDrawShown=false;board=["","","","","","","","",""];renderBoard();myTurn=(myMark==="X");document.getElementById("onlineResetBtn").style.display="none";update(ref(db,"rooms/"+currentRoom),{resetRound:false});return;}if(room.left){showToast("Opponent left the game");currentRoom=null;myMark=null;myTurn=false;window._roomListenerAttachedFor=null;setTimeout(()=>showHome(),1500);return;}if(room.status==="win"){document.getElementById("onlineResetBtn").style.display="block";if(!window.onlineWinShown){window.onlineWinShown=true;scores[room.winner]+=1;updateScoreUI();launchConfetti();vib(200);showToast(room.winner+" Wins!");}return;}if(room.status==="draw"){if(!window.onlineDrawShown){window.onlineDrawShown=true;scores.D+=1;updateScoreUI();showToast("It's a Draw!");}return;}});}
+function openOnlinePage(){window._waitingListenerAttachedFor=null;window._roomListenerAttachedFor=null;window.prevBoard=null;currentRoom=null;myMark=null;myTurn=false;window.onlineWinShown=false;window.onlineDrawShown=false;onlinePage.classList.remove("hidden");hideInviteUI();onlineWaitingBox.style.display="none";home.style.display="none";gameScreen.style.display="none";levels.style.display="none";historyPage.style.display="none";onlinePage.style.display="block";}
+function checkWinnerOnline(mark){return wins.some(([a,b,c])=>board[a]===mark&&board[b]===mark&&board[c]===mark);}
+function leaveOnlineGame(){opponentStatusEl.style.display="none";window.prevBoard=null;window._roomListenerAttachedFor=null;window._waitingListenerAttachedFor=null;if(currentRoom){const roomRef=ref(db,"rooms/"+currentRoom);if(myMark==="X"){set(roomRef,null);}else{update(roomRef,{left:true});}}currentRoom=null;myMark=null;myTurn=false;window.onlineWinShown=false;window.onlineDrawShown=false;onlinePage.style.display="none";showHome();}
+function showInviteUI(roomId){document.getElementById("inviteCodeText").innerText=roomId;document.getElementById("inviteBox").style.display="block";document.getElementById("inviteStatusText").innerText="Waiting";document.getElementById("copyInviteBtn").style.display="inline-block";document.getElementById("shareInviteBtn").style.display="inline-block";}
+function hideInviteUI(){document.getElementById("inviteBox").style.display="none";}
+function copyRoomCode(){const code=document.getElementById("inviteCodeText").innerText;navigator.clipboard.writeText(code).then(()=>{showToast("Room code copied");}).catch(()=>{const tmp=document.createElement('textarea');tmp.value=code;document.body.appendChild(tmp);tmp.select();document.execCommand('copy');document.body.removeChild(tmp);showToast("Room code copied");});}
+function shareRoomCode(){const code=document.getElementById("inviteCodeText").innerText;const url=location.href.split('#')[0];const shareText=`Join my XOX game — Room Code: ${code}\nOpen: ${url}`;if(navigator.share){navigator.share({title:'Play XOX with me',text:shareText}).catch(()=>{});}else{navigator.clipboard.writeText(shareText).then(()=>showToast("Invite text copied"));}}
+function showThinkingIndicator(){const t=document.getElementById("thinkingIndicator");if(t)t.style.display="block";}
+function hideThinkingIndicator(){const t=document.getElementById("thinkingIndicator");if(t)t.style.display="none";}
+function minimaxMove(){const logicBoard=board.map(v=>{if(v===emojiTheme.X)return'X';if(v===emojiTheme.O)return'O';return'';});function checkWinLogic(b){for(const[a,b1,c]of wins){if(b[a]&&b[a]===b[b1]&&b[b1]===b[c])return b[a];}return null;}function avail(b){return b.map((v,i)=>v===''?i:null).filter(x=>x!==null);}function score(b){const w=checkWinLogic(b);if(w==='O')return 10;if(w==='X')return-10;return 0;}function minimaxRec(b,player){const available=avail(b),winner=checkWinLogic(b);if(winner||available.length===0)return{score:score(b)};const moves=[];for(const idx of available){const mov={index:idx};b[idx]=player;const result=minimaxRec(b,player==='O'?'X':'O');mov.score=result.score;b[idx]='';moves.push(mov);}let best;if(player==='O'){let bestScore=-Infinity;moves.forEach(m=>{if(m.score>bestScore){bestScore=m.score;best=m;}});}else{let bestScore=Infinity;moves.forEach(m=>{if(m.score<bestScore){bestScore=m.score;best=m;}});}return best;}const m=minimaxRec(logicBoard,'O');return m&&typeof m.index==='number'?m.index:randomMove();}
+window.startAI=startAI;window.startFriend=startFriend;window.openLevels=openLevels;window.universalBack=universalBack;
+</script>
+<script>(function(){function setBar(px){if(px>0&&px<120)document.documentElement.style.setProperty('--status-bar-height',px+'px');}function detect(){if(window.screenTop>0&&window.screenTop<120){setBar(window.screenTop);return;}if(window.screenY>0&&window.screenY<120){setBar(window.screenY);return;}var d=window.screen.height-window.outerHeight;if(d>0&&d<80)setBar(d);}detect();window.addEventListener('load',detect);window.addEventListener('resize',detect);setTimeout(detect,500);setTimeout(detect,1500);})();</script>
+</body></html>

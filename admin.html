@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyMatrix Admin Pro</title>
+
+<style>
+body{
+  margin:0;
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at top,#1a0000,#0a0a0a 60%);
+  color:#ffffff;
+}
+
+/* HEADER */
+header{
+  background: linear-gradient(90deg,#2b0000,#140000);
+  padding:18px;
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  letter-spacing:1px;
+  color:#ff1e1e;
+  border-bottom:2px solid #ff0000;
+  box-shadow:0 0 25px #ff000088;
+}
+
+/* CONTAINER */
+.container{
+  padding:25px;
+  max-width:950px;
+  margin:auto;
+}
+
+/* CARD */
+.card{
+  background: rgba(255,0,0,0.05);
+  border:1px solid rgba(255,0,0,0.6);
+  backdrop-filter: blur(15px);
+  padding:18px;
+  margin:18px 0;
+  border-radius:8px;
+  box-shadow:
+    0 0 10px rgba(255,0,0,0.4),
+    inset 0 0 15px rgba(255,0,0,0.2);
+  transition:0.3s ease-in-out;
+}
+
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:
+    0 0 25px rgba(255,0,0,0.8),
+    inset 0 0 20px rgba(255,0,0,0.3);
+}
+
+/* INPUTS */
+textarea,input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:5px;
+  border:1px solid #ff0000aa;
+  background:#111;
+  color:white;
+  outline:none;
+  transition:0.3s;
+}
+
+textarea:focus,input:focus{
+  border-color:#ff0000;
+  box-shadow:0 0 10px #ff0000;
+}
+
+/* BUTTONS */
+button{
+  padding:9px 18px;
+  margin:6px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  font-weight:bold;
+  transition:0.2s;
+}
+
+.red{
+  background:#b30000;
+  color:white;
+  box-shadow:0 0 10px #ff0000;
+}
+
+.red:hover{
+  background:#ff0000;
+  box-shadow:0 0 20px #ff0000;
+}
+
+.green{
+  background:#14532d;
+  color:white;
+}
+
+.blue{
+  background:#1e40af;
+  color:white;
+}
+
+.gray{
+  background:#333;
+  color:white;
+}
+
+/* BADGES */
+.badge-active{
+  color:#00ff66;
+  font-weight:bold;
+  text-shadow:0 0 8px #00ff66;
+}
+
+.badge-inactive{
+  color:#ff2e2e;
+  font-weight:bold;
+  text-shadow:0 0 8px #ff0000;
+}
+</style>
+</head>
+<body>
+
+<header>🔐 StudyMatrix Admin Pro</header>
+
+<div class="container">
+
+<button id="loginBtn" class="green">Login</button>
+<button id="logoutBtn" class="red" style="display:none;">Logout</button>
+
+<div id="status"></div>
+
+<div class="card">
+<h3>Create Notification</h3>
+<textarea id="message" placeholder="Enter notification"></textarea>
+
+<label>Auto Expiry (Days):</label>
+<input type="number" id="expiryDays" placeholder="Leave blank for no expiry">
+
+<button id="addBtn" class="blue">Publish</button>
+</div>
+
+<h3>All Notifications</h3>
+<div id="notificationList"></div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  serverTimestamp,
+  onSnapshot,
+  deleteDoc,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import { 
+  getAuth, 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  onAuthStateChanged, 
+  signOut 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBalHEO3Hn44955gitMZMvVbCU4dqHiEnU",
+  authDomain: "studymatrix360.firebaseapp.com",
+  projectId: "studymatrix360",
+  storageBucket: "studymatrix360.appspot.com",
+  messagingSenderId: "154185638216",
+  appId: "1:154185638216:web:eb714b8b339c4fca16d37d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+const notifRef = collection(db,"notifications");
+
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const addBtn = document.getElementById("addBtn");
+const messageInput = document.getElementById("message");
+const expiryInput = document.getElementById("expiryDays");
+const statusDiv = document.getElementById("status");
+
+loginBtn.onclick = async ()=>{ await signInWithPopup(auth, provider); };
+logoutBtn.onclick = async ()=>{ await signOut(auth); };
+
+onAuthStateChanged(auth,(user)=>{
+  if(user){
+    loginBtn.style.display="none";
+    logoutBtn.style.display="inline-block";
+    statusDiv.innerText="Logged as: "+user.email;
+  }else{
+    loginBtn.style.display="inline-block";
+    logoutBtn.style.display="none";
+    statusDiv.innerText="Not Logged";
+  }
+});
+
+addBtn.onclick = async ()=>{
+  const user = auth.currentUser;
+  if(!user) return alert("Login first");
+
+  const msg = messageInput.value.trim();
+  if(msg==="") return alert("Message empty");
+
+  let expiryDate=null;
+  const days = expiryInput.value;
+
+  if(days){
+    const now = new Date();
+    now.setDate(now.getDate()+parseInt(days));
+    expiryDate = now;
+  }
+
+  await addDoc(notifRef,{
+    message:msg,
+    status:"active",
+    createdAt:serverTimestamp(),
+    expiryAt: expiryDate ? expiryDate : null
+  });
+
+  messageInput.value="";
+  expiryInput.value="";
+};
+
+onSnapshot(notifRef,(snapshot)=>{
+  const list=document.getElementById("notificationList");
+  list.innerHTML="";
+
+  snapshot.forEach((d)=>{
+    const data=d.data();
+
+    list.innerHTML+=`
+    <div class="card">
+      <p>${data.message}</p>
+      <p>Status: <span class="${data.status==="active"?"badge-active":"badge-inactive"}">${data.status}</span></p>
+      <button class="blue" onclick="editNotif('${d.id}','${data.message}')">Edit</button>
+      <button class="red" onclick="deleteNotif('${d.id}')">Delete</button>
+      <button class="gray" onclick="toggleNotif('${d.id}','${data.status}')">Toggle</button>
+    </div>
+    `;
+  });
+});
+
+window.deleteNotif = async (id)=>{
+  await deleteDoc(doc(db,"notifications",id));
+};
+
+window.editNotif = async (id,msg)=>{
+  const newMsg = prompt("Edit:",msg);
+  if(newMsg){
+    await updateDoc(doc(db,"notifications",id),{message:newMsg});
+  }
+};
+
+window.toggleNotif = async (id,status)=>{
+  await updateDoc(doc(db,"notifications",id),{
+    status: status==="active"?"inactive":"active"
+  });
+};
+
+</script>
+
+</body>
+</html>

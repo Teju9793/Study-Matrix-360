@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>No Internet — Study Matrix</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap');
+:root{--status-bar-height:max(24px, env(safe-area-inset-top));--bg:#030d12;--t1:#00e5c0;--t2:#00b89c;--t3:#00ffd5;--muted:#4a7a72;--text:#d0fff5;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'Sora',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 90% 50% at 50% -5%,rgba(0,200,160,0.13) 0%,transparent 60%),radial-gradient(ellipse 60% 60% at 100% 40%,rgba(0,160,130,0.08) 0%,transparent 55%);animation:oceanBreath 10s ease-in-out infinite alternate;}
+@keyframes oceanBreath{0%{opacity:.7;transform:scaleY(1)}100%{opacity:1;transform:scaleY(1.04)}}
+.center{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;padding-top:max(20px, env(safe-area-inset-top));text-align:center;}
+.icon-box{width:100px;height:100px;border-radius:28px;background:linear-gradient(145deg,rgba(0,80,65,.5),rgba(0,40,35,.7));border:1.5px solid rgba(0,229,192,.25);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:24px;box-shadow:0 0 40px rgba(0,200,160,.2);animation:pulse 2.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(0,200,160,.2)}50%{box-shadow:0 0 40px rgba(0,229,192,.5)}}
+.headline{font-size:24px;font-weight:800;margin-bottom:10px;background:linear-gradient(90deg,var(--t1),var(--t3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sub{font-size:14px;color:var(--muted);line-height:1.6;max-width:280px;margin-bottom:28px;}
+.retry-btn{padding:13px 32px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--t1),var(--t3));color:#032b2e;font-weight:700;font-size:15px;cursor:pointer;font-family:'Sora',sans-serif;box-shadow:0 6px 20px rgba(0,229,192,.3);transition:all .25s;}
+.retry-btn:active{transform:scale(.97);}
+footer{position:absolute;bottom:20px;font-size:12px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="center">
+  <div class="icon-box">📡</div>
+  <div class="headline">No Internet Connection</div>
+  <div class="sub">You are offline. Please check your network and try again.</div>
+  <button class="retry-btn" onclick="location.reload()">Retry</button>
+  <footer>Study Matrix</footer>
+</div>
+<script>
+window.addEventListener("online",()=>{window.history.back();});
+(function(){function s(px){if(px>0&&px<120)document.documentElement.style.setProperty('--status-bar-height',px+'px');}function d(){if(window.screenTop>0&&window.screenTop<120){s(window.screenTop);return;}if(window.screenY>0&&window.screenY<120){s(window.screenY);return;}var v=window.screen.height-window.outerHeight;if(v>0&&v<80)s(v);}d();window.addEventListener('load',d);window.addEventListener('resize',d);setTimeout(d,500);})();
+</script>
+<script>
+(function() {
+  history.pushState({ sm: true }, '');
+  window.addEventListener('popstate', function() { window.location.replace('dashboard.html'); });
+})();
+</script>
+</body>
+</html>

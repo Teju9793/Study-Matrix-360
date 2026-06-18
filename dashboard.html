@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="kn">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+<title>Study Matrix 360</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X4DGJNQ1DB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-X4DGJNQ1DB');
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --status-bar-height: 0px;
+  --bg:#030d12; --bg2:#041018; --surface:#071820; --card:#0a2030;
+  --border:rgba(0,200,160,0.1); --t1:#00e5c0; --t2:#00b89c; --t3:#00ffd5;
+  --t4:#0ec4b0; --muted:#4a7a72; --text:#d0fff5; --dim:#1a3a45;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{width:100%;height:100%;}
+body{width:100%;min-height:100vh;height:auto;overflow-x:hidden;background:var(--bg);color:var(--text);font-family:'Sora',system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding-top:0;}
+
+/* DEEP OCEAN BACKGROUND */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 90% 50% at 50% -5%,rgba(0,200,160,0.13) 0%,transparent 60%),radial-gradient(ellipse 60% 60% at 100% 40%,rgba(0,160,130,0.08) 0%,transparent 55%),radial-gradient(ellipse 50% 50% at 0% 70%,rgba(0,180,150,0.07) 0%,transparent 55%),radial-gradient(ellipse 70% 40% at 50% 110%,rgba(0,100,80,0.15) 0%,transparent 60%);animation:oceanBreath 10s ease-in-out infinite alternate;}
+@keyframes oceanBreath{0%{opacity:.7;transform:scaleY(1)}100%{opacity:1;transform:scaleY(1.04)}}
+
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(1.5px 1.5px at 15% 25%,rgba(0,229,192,0.7),transparent),radial-gradient(1px 1px at 75% 12%,rgba(0,200,160,0.5),transparent),radial-gradient(2px 2px at 45% 65%,rgba(0,255,213,0.4),transparent),radial-gradient(1px 1px at 88% 72%,rgba(0,180,145,0.5),transparent),radial-gradient(1.5px 1.5px at 30% 85%,rgba(0,229,192,0.5),transparent),radial-gradient(1px 1px at 62% 38%,rgba(0,210,170,0.4),transparent),radial-gradient(2px 2px at 8% 55%,rgba(0,255,213,0.35),transparent),radial-gradient(1px 1px at 93% 90%,rgba(0,200,160,0.4),transparent);animation:drift 18s ease-in-out infinite alternate;}
+@keyframes drift{0%{transform:translateY(0) translateX(0)}100%{transform:translateY(-20px) translateX(6px)}}
+
+.app::after{content:'';position:fixed;bottom:0;left:0;right:0;height:3px;z-index:0;background:linear-gradient(90deg,transparent,var(--t1),var(--t3),var(--t2),transparent);background-size:200% 100%;animation:waveFlow 4s linear infinite;pointer-events:none;}
+@keyframes waveFlow{0%{background-position:0% 0%}100%{background-position:200% 0%}}
+
+/* APP */
+.app{display:block;min-height:100vh;overflow-x:hidden;overflow-y:auto;position:relative;z-index:1;}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;height:62px;padding-top:0;margin-top:0;display:flex;align-items:center;justify-content:space-between;padding-left:18px;padding-right:18px;background:rgba(3,13,18,0.88);backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px);border-bottom:1px solid rgba(0,200,160,0.08);z-index:9999;}
+.topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--t1),var(--t3),var(--t2),transparent);background-size:200% 100%;animation:waveFlow 4s linear infinite;box-shadow:0 0 8px rgba(0,229,192,0.3);}
+
+.title{font-size:22px;font-weight:800;letter-spacing:-0.3px;white-space:nowrap;color:#00eaff;text-shadow:0 0 12px #00eaff;}
+.title em{font-style:normal;background:linear-gradient(90deg,var(--t1),var(--t3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+.menuBtn{width:38px;height:38px;border-radius:12px;background:rgba(0,80,65,0.3);border:1px solid rgba(0,200,160,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--t1);cursor:pointer;transition:all .2s;}
+.menuBtn:hover{background:rgba(0,100,80,0.4);border-color:var(--t1);box-shadow:0 0 14px rgba(0,229,192,0.2);}
+
+.backBtn{display:none;padding:7px 16px;font-size:13px;font-weight:600;background:rgba(0,80,65,0.25);border:1px solid rgba(0,200,160,0.2);color:var(--t1);border-radius:12px;cursor:pointer;transition:all .2s;letter-spacing:0.2px;font-family:'Sora',sans-serif;}
+.backBtn:hover{background:rgba(0,100,80,0.35);border-color:var(--t1);box-shadow:0 0 14px rgba(0,229,192,0.18);}
+
+/* MAIN */
+.main{padding-top:72px;padding-bottom:40px;min-height:calc(100vh - 72px - var(--status-bar-height));overflow-y:auto;}
+
+/* MENU DROPDOWN */
+#menuFolder{background:rgba(4,16,24,0.97)!important;border:1px solid rgba(0,200,160,0.12)!important;border-radius:18px!important;box-shadow:0 20px 60px rgba(0,0,0,0.85),0 0 30px rgba(0,150,120,0.05)!important;backdrop-filter:blur(24px);overflow:hidden;}
+.menuItem{padding:13px 18px!important;font-size:14px!important;font-weight:600!important;color:var(--text)!important;border-radius:0!important;transition:background .2s!important;letter-spacing:0.2px;}
+.menuItem:hover{background:rgba(0,180,145,0.08)!important;color:var(--t1)!important;}
+
+/* ABOUT MODAL */
+#aboutModal{background:linear-gradient(145deg,rgba(4,16,24,0.99),rgba(3,12,20,0.99))!important;border:1px solid rgba(0,200,160,0.14)!important;border-radius:28px!important;box-shadow:0 30px 80px rgba(0,0,0,0.9),0 0 40px rgba(0,150,120,0.06)!important;backdrop-filter:blur(24px);overflow:hidden;padding:0!important;}
+.dev-photo-wrap{position:relative;display:flex;justify-content:center;padding-top:28px;padding-bottom:10px;}
+.dev-photo-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:90px;background:linear-gradient(135deg,rgba(0,200,160,0.15),rgba(0,100,80,0.08));border-radius:28px 28px 0 0;}
+.dev-photo{width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid var(--t1);box-shadow:0 0 0 5px rgba(0,229,192,0.12),0 0 30px rgba(0,229,192,0.35);position:relative;z-index:1;animation:devFloat 4s ease-in-out infinite;}
+@keyframes devFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.dev-photo-placeholder{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,rgba(0,100,80,0.5),rgba(0,60,50,0.7));border:3px solid var(--t1);box-shadow:0 0 0 5px rgba(0,229,192,0.12),0 0 30px rgba(0,229,192,0.35);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;z-index:1;}
+.dev-name{font-size:18px;font-weight:800;text-align:center;letter-spacing:-0.3px;margin:8px 0 2px;background:linear-gradient(90deg,var(--t1),var(--t3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.dev-role{font-size:12px;color:var(--muted);text-align:center;margin-bottom:14px;letter-spacing:0.5px;text-transform:uppercase;}
+.dev-section{margin:0 18px 12px;background:rgba(0,200,160,0.04);border:1px solid rgba(0,200,160,0.1);border-radius:14px;padding:12px 14px;}
+.dev-section-title{font-size:10px;font-weight:700;color:var(--t1);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.dev-section-title::after{content:'';flex:1;height:1px;background:rgba(0,200,160,0.15);}
+.dev-desc{font-size:13px;color:var(--text);line-height:1.6;opacity:0.85;}
+.dev-links{display:flex;gap:8px;margin:0 18px 18px;}
+.dev-link{flex:1;padding:10px 8px;border-radius:12px;border:1px solid rgba(0,200,160,0.2);background:rgba(0,80,65,0.2);color:var(--t1);font-size:12px;font-weight:700;text-decoration:none;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.dev-link:hover{background:rgba(0,100,80,0.35);border-color:var(--t1);box-shadow:0 0 14px rgba(0,229,192,0.18);}
+.dev-link span{font-size:18px;}
+.dev-close{display:block;width:calc(100% - 36px);margin:0 18px 20px;padding:12px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--t1),var(--t3));color:#032b2e;font-weight:700;font-size:14px;cursor:pointer;font-family:'Sora',sans-serif;box-shadow:0 4px 16px rgba(0,229,192,0.3);transition:all .25s;}
+.dev-close:hover{transform:scale(1.02);box-shadow:0 6px 24px rgba(0,229,192,0.45);}
+
+/* HOME CARDS */
+.folders{width:100%;display:flex;flex-direction:column;gap:10px;align-items:stretch;padding:14px 14px 10px;}
+.card{width:100%;background:linear-gradient(145deg,rgba(10,32,48,0.9),rgba(7,24,36,0.95));border:1px solid rgba(0,180,145,0.12);border-radius:20px;padding:15px 16px;display:flex;gap:14px;align-items:center;backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,0.5),inset 0 1px 0 rgba(0,255,213,0.04);transition:all .3s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden;}
+.card:nth-child(1){--ck:#00e5c0}.card:nth-child(2){--ck:#00b89c}.card:nth-child(3){--ck:#26d9c0}.card:nth-child(4){--ck:#00ffd5}.card:nth-child(5){--ck:#0ec4b0}.card:nth-child(6){--ck:#00d4b0}.card:nth-child(7){--ck:#00c9a7}.card:nth-child(8){--ck:#00e0c0}
+.card::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--ck,var(--t1));box-shadow:0 0 12px var(--ck,var(--t1));opacity:.7;transition:opacity .3s;}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ck,var(--t1)),transparent);opacity:0;transition:opacity .3s;}
+.card:hover{transform:translateY(-4px) translateX(3px);border-color:rgba(0,200,160,0.25);box-shadow:0 14px 40px rgba(0,0,0,0.6),0 0 0 1px rgba(0,200,160,0.08),-3px 0 20px color-mix(in srgb,var(--ck,var(--t1)) 12%,transparent);}
+.card:hover::before{opacity:1;}.card:hover::after{opacity:1;}
+.card .icon{width:56px;height:56px;border-radius:16px;flex-shrink:0;background:linear-gradient(135deg,color-mix(in srgb,var(--ck,var(--t1)) 18%,transparent),color-mix(in srgb,var(--ck,var(--t1)) 6%,transparent));border:1px solid color-mix(in srgb,var(--ck,var(--t1)) 22%,transparent);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 0 18px color-mix(in srgb,var(--ck,var(--t1)) 12%,transparent);transition:all .3s;}
+.card:hover .icon{transform:scale(1.1) rotate(-5deg);box-shadow:0 0 28px color-mix(in srgb,var(--ck,var(--t1)) 35%,transparent);}
+.card h3{margin:0 0 3px;font-size:15.5px;font-weight:700;color:var(--text);letter-spacing:-0.2px;}
+.card p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.4;}
+.cardBtn{margin-left:auto;flex-shrink:0;background:linear-gradient(135deg,var(--ck,var(--t1)),color-mix(in srgb,var(--ck,var(--t1)) 80%,#fff));color:#030d12;padding:9px 18px;border-radius:12px;border:none;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.2px;font-family:'Sora',sans-serif;box-shadow:0 4px 16px color-mix(in srgb,var(--ck,var(--t1)) 28%,transparent);transition:all .25s;}
+.cardBtn:hover{transform:scale(1.07);box-shadow:0 6px 24px color-mix(in srgb,var(--ck,var(--t1)) 48%,transparent);}
+
+/* VIEWS */
+.view{display:none;width:100%;align-items:center;flex-direction:column;justify-content:flex-start;}
+.fadeIn{animation:fadeIn .38s cubic-bezier(0.4,0,0.2,1) forwards;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* NOTES */
+.notesView{display:none;padding:0;text-align:center;margin-top:0;width:100%;}
+.notesTitle{font-size:22px;font-weight:800;letter-spacing:-0.3px;background:linear-gradient(90deg,var(--t1),var(--t3),var(--t2));background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite;margin:14px 0 6px;padding:0 16px;filter:drop-shadow(0 0 12px rgba(0,200,160,0.3));}
+@keyframes shimmer{to{background-position:200% center}}
+.folderBox{margin-top:10px;width:92%;max-width:520px;margin-left:auto;margin-right:auto;display:flex;flex-direction:column;gap:9px;}
+.folderItem{padding:15px 18px;background:linear-gradient(145deg,rgba(10,32,48,0.9),rgba(7,24,36,0.95));border:1px solid rgba(0,180,145,0.12);border-radius:16px;font-size:14.5px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:14px;cursor:pointer;white-space:nowrap;justify-content:flex-start;box-shadow:0 4px 18px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,255,213,0.03);backdrop-filter:blur(12px);transition:all .25s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden;}
+.folderItem:nth-child(1){--fi:#00e5c0}.folderItem:nth-child(2){--fi:#00b89c}.folderItem:nth-child(3){--fi:#26d9c0}.folderItem:nth-child(4){--fi:#00ffd5}.folderItem:nth-child(5){--fi:#0ec4b0}.folderItem:nth-child(6){--fi:#00d4b0}.folderItem:nth-child(7){--fi:#00c9a7}.folderItem:nth-child(8){--fi:#00e0c0}
+.folderItem::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:16px 0 0 16px;background:var(--fi,var(--t1));box-shadow:0 0 12px var(--fi,var(--t1));opacity:0;transition:opacity .25s;}
+.folderItem::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(90deg,color-mix(in srgb,var(--fi,var(--t1)) 7%,transparent),transparent 60%);opacity:0;transition:opacity .25s;}
+.folderItem:hover{border-color:color-mix(in srgb,var(--fi,var(--t1)) 35%,transparent);transform:translateX(8px);color:#fff;box-shadow:0 6px 28px rgba(0,0,0,0.5),-4px 0 20px color-mix(in srgb,var(--fi,var(--t1)) 12%,transparent);}
+.folderItem:hover::before{opacity:1;}.folderItem:hover::after{opacity:1;}
+
+/* FOOTER */
+.ocean-footer{width:100%;max-width:820px;margin:18px auto 8px;padding:14px 18px;background:linear-gradient(145deg,rgba(10,32,48,0.8),rgba(7,24,36,0.9));border:1px solid rgba(0,180,145,0.1);border-radius:16px;text-align:center;font-size:12px;color:var(--muted);}
+.ocean-footer a{color:var(--t1);text-decoration:none;font-weight:600;}
+
+/* IMG POPUP */
+#imgPopup{background:rgba(3,10,14,0.97)!important;backdrop-filter:blur(24px);}
+
+/* MATRIX AI HERO */
+.matrixai-hero-card{width:100%;position:relative;border-radius:24px;padding:0;overflow:hidden;cursor:pointer;margin-bottom:4px;animation:fadeIn .38s cubic-bezier(0.4,0,0.2,1) forwards;text-decoration:none;display:block;-webkit-tap-highlight-color:transparent;}
+.matrixai-hero-card::before{content:'';position:absolute;inset:0;border-radius:24px;z-index:0;background:linear-gradient(135deg,rgba(0,229,192,0.14) 0%,rgba(0,80,60,0.35) 40%,rgba(0,20,15,0.9) 100%);border:1.5px solid rgba(0,229,192,0.35);box-shadow:0 0 0 1px rgba(0,229,192,0.1),0 8px 40px rgba(0,0,0,0.7),0 0 60px rgba(0,229,192,0.08),inset 0 1px 0 rgba(0,255,213,0.12);animation:aiCardGlow 3s ease-in-out infinite alternate;}
+@keyframes aiCardGlow{0%{box-shadow:0 0 0 1px rgba(0,229,192,0.1),0 8px 40px rgba(0,0,0,0.7),0 0 40px rgba(0,229,192,0.08),inset 0 1px 0 rgba(0,255,213,0.12)}100%{box-shadow:0 0 0 1px rgba(0,229,192,0.2),0 8px 40px rgba(0,0,0,0.7),0 0 80px rgba(0,229,192,0.15),inset 0 1px 0 rgba(0,255,213,0.18)}}
+.matrixai-hero-card:hover::before{border-color:rgba(0,229,192,0.6);box-shadow:0 0 0 2px rgba(0,229,192,0.2),0 14px 50px rgba(0,0,0,0.8),0 0 100px rgba(0,229,192,0.2);}
+.matrixai-hero-inner{position:relative;z-index:1;padding:20px 18px 18px;display:flex;flex-direction:column;gap:14px;}
+.matrixai-hero-top{display:flex;align-items:center;gap:14px;}
+.matrixai-hero-avatar{width:64px;height:64px;border-radius:20px;flex-shrink:0;background:radial-gradient(circle at 35% 35%,rgba(0,200,160,0.4),rgba(0,40,32,0.8));border:1.5px solid rgba(0,229,192,0.4);box-shadow:0 0 24px rgba(0,229,192,0.3),inset 0 1px 0 rgba(0,255,213,0.15);display:flex;align-items:center;justify-content:center;font-size:30px;animation:aiAvatarFloat 3s ease-in-out infinite;position:relative;}
+.matrixai-hero-avatar::after{content:'';position:absolute;inset:-5px;border-radius:24px;border:1px solid rgba(0,229,192,0.2);animation:aiAvatarRing 2.5s ease-in-out infinite;}
+@keyframes aiAvatarFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-5px) rotate(2deg)}}
+@keyframes aiAvatarRing{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.15);opacity:.1}}
+.matrixai-hero-text{flex:1;min-width:0;}
+.matrixai-hero-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(0,229,192,0.7);margin-bottom:4px;display:flex;align-items:center;gap:5px;}
+.matrixai-hero-label::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--t1);box-shadow:0 0 6px var(--t1);animation:aiDotBlink 2s ease-in-out infinite;}
+@keyframes aiDotBlink{0%,100%{opacity:1}50%{opacity:.3}}
+.matrixai-hero-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(90deg,#fff 0%,var(--t1) 50%,var(--t3) 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:aiTitleShimmer 3s linear infinite;}
+@keyframes aiTitleShimmer{0%{background-position:0%}100%{background-position:200%}}
+.matrixai-hero-sub{font-size:12px;color:rgba(74,122,114,0.9);margin-top:3px;line-height:1.4;}
+.matrixai-hero-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.matrixai-chip{padding:5px 11px;border-radius:20px;background:rgba(0,50,40,0.6);border:1px solid rgba(0,200,160,0.2);color:var(--t1);font-size:11px;font-weight:600;white-space:nowrap;}
+.matrixai-hero-btn{width:100%;padding:13px;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--t1) 0%,var(--t3) 50%,var(--t2) 100%);background-size:200% auto;color:#030d12;font-size:14px;font-weight:800;letter-spacing:0.3px;font-family:'Sora',sans-serif;box-shadow:0 6px 24px rgba(0,229,192,0.35);transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;animation:aiTitleShimmer 3s linear infinite;text-decoration:none;}
+.matrixai-hero-btn:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 10px 32px rgba(0,229,192,0.5);}
+.matrixai-hero-btn:active{transform:scale(0.98);}
+
+/* RESPONSIVE */
+@media(min-width:900px){.main{padding-left:40px;padding-right:40px;}.folders{padding:20px 0 16px;}.folderBox{max-width:820px;width:100%;}}
+@media(min-width:600px) and (max-width:899px){.main{padding-left:24px;padding-right:24px;}.folderBox{max-width:100%;width:100%;}}
+@media(max-width:599px){
+  .card{width:100%;border-radius:18px;}.card .icon{width:50px;height:50px;font-size:22px;}
+  .title{font-size:18px;}.cardBtn{padding:8px 13px;font-size:12px;}.folders{padding:10px 12px 10px;}
+  .ocean-footer{width:100%;max-width:820px;margin:18px auto 8px;}
+  #notes_year,#notes_cycle,#notes_subject,#notes_chapter{margin-top:0!important;padding-top:0!important}
+  .folderBox,#chapterBox{margin-top:0!important;padding-top:0!important}
+  .icon img{width:40px;height:40px;object-fit:contain;}
+  img{touch-action:pinch-zoom;}
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="appShell">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="title">Study <em>Matrix</em></div>
+    <div style="display:flex;gap:14px;align-items:center;position:relative;">
+      <button id="backBtn" class="backBtn" onclick="handleBack()">‹ Back</button>
+
+      <!-- BELL -->
+      <div id="bellContainer" style="position:relative;cursor:pointer;display:flex;align-items:center;font-size:28px;color:#00eaff;text-shadow:0 0 10px #00eaff;">
+        🔔
+        <span id="bellCount" style="position:absolute;top:-6px;right:-6px;background:red;color:white;font-size:11px;padding:2px 6px;border-radius:50%;display:none;">0</span>
+      </div>
+
+      <div id="menuBtn" class="menuBtn" style="font-size:28px;color:#00eaff;cursor:pointer;">⋮</div>
+    </div>
+  </div>
+
+  <!-- DROPDOWN MENU -->
+  <div id="menuFolder" role="menu" aria-hidden="true" style="display:none;position:fixed;top:62px;right:12px;background:linear-gradient(180deg,rgba(2,10,20,0.98),rgba(2,6,12,0.98));border:1px solid rgba(0,240,255,0.08);padding:8px;border-radius:10px;z-index:99999">
+    <div class="menuItem cardBtn" id="aboutFolderBtn" style="background:transparent;color:var(--t1);border:none;padding:8px 10px;cursor:pointer">About Developer</div>
+  </div>
+
+  <!-- ABOUT MODAL -->
+  <div id="aboutModal" role="dialog" aria-hidden="true" style="display:none;position:fixed;inset:8% 5%;z-index:99999;overflow-y:auto;">
+    <div class="dev-photo-wrap">
+      <img src="developer.jpg" alt="Developer" class="dev-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="dev-photo-placeholder" style="display:none;">👨‍💻</div>
+    </div>
+    <div class="dev-name">KR Tejas Kumar</div>
+    <div class="dev-role">Full Stack Developer & App Builder</div>
+    <div class="dev-section">
+      <div class="dev-section-title">About Me</div>
+      <div class="dev-desc">Engineering student passionate about building real-world apps. Created Study Matrix 360 to help fellow students access notes, tools, and resources — all in one place.</div>
+    </div>
+    <div class="dev-section">
+      <div class="dev-section-title">About Study Matrix</div>
+      <div class="dev-desc">A smart study companion for engineering students — featuring notes, PYQP, timetable, games, marketplace, and more. Built with Firebase, Kotlin & HTML.</div>
+    </div>
+    <div class="dev-section">
+      <div class="dev-section-title">Features</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+        <div style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">🎮 <span>Games</span></div>
+        <div style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">📚 <span>Engineering Notes</span></div>
+        <div style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">📄 <span>Question Papers</span></div>
+        <div style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">🕐 <span>Time Table</span></div>
+        <div style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">🛒 <span>Marketplace</span></div>
+        <div style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">✍️ <span>Writers Hub</span></div>
+        <div style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">💬 <span>Feedback</span></div>
+        <div style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">🔔 <span>Notifications</span></div>
+      </div>
+    </div>
+    <div class="dev-links">
+      <a class="dev-link" href="https://www.linkedin.com/in/k-r-tejas-kumar-733b26379" target="_blank"><span>💼</span>LinkedIn</a>
+      <a class="dev-link" href="https://instagram.com/teju_9793" target="_blank"><span>📸</span>Instagram</a>
+    </div>
+    <button class="dev-close" onclick="closeAbout()">Close</button>
+  </div>
+
+  <main class="main">
+
+    <!-- HOME VIEW -->
+    <section id="homeView" class="view" style="display:flex;">
+      <div class="folders">
+
+        <!-- MATRIX AI HERO -->
+        <a class="matrixai-hero-card" href="matrix-ai.html">
+          <div class="matrixai-hero-inner">
+            <div class="matrixai-hero-top">
+              <div class="matrixai-hero-avatar">🤖</div>
+              <div class="matrixai-hero-text">
+                <div class="matrixai-hero-label">AI Powered · Gemini 2.5</div>
+                <div class="matrixai-hero-title">Matrix AI</div>
+                <div class="matrixai-hero-sub">Your smart study assistant</div>
+              </div>
+            </div>
+            <div class="matrixai-hero-chips">
+              <span class="matrixai-chip">📸 Image Analysis</span>
+              <span class="matrixai-chip">💻 Code Help</span>
+              <span class="matrixai-chip">📝 Quiz Gen</span>
+              <span class="matrixai-chip">📖 Summarize</span>
+              <span class="matrixai-chip">🔊 Voice</span>
+            </div>
+            <div class="matrixai-hero-btn">Start Chatting ✦</div>
+          </div>
+        </a>
+
+        <div class="card fadeIn">
+          <div class="icon"><img src="icons/games.png" style="width:60px;height:60px;"></div>
+          <div style="flex:1"><h3>Games</h3><p class="muted">Mini-games to refresh</p></div>
+          <button class="cardBtn" onclick="window.location.href='games.html'">Open</button>
+        </div>
+
+        <div class="card fadeIn" style="animation-delay:.30s">
+          <div class="icon"><img src="sit-logo.png" style="width:45px;height:45px;border-radius:10px;"></div>
+          <div style="flex:1"><h3>SIS</h3><p class="muted">SSIT Student Information System</p></div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end">
+            <button class="cardBtn" onclick="window.open('http://sis.e365.tech/login.aspx?AppType=E&sid=1040','_blank')">Open</button>
+            <p style="font-size:11px;color:#9fb0c8;margin-top:4px">Opens external website</p>
+          </div>
+        </div>
+
+        <div class="card fadeIn" style="animation-delay:.05s">
+          <div class="icon"><img src="icons/notes.png" style="width:60px;height:60px;"></div>
+          <div style="flex:1"><h3>Engineering Notes</h3><p class="muted">Study materials</p></div>
+          <button class="cardBtn" onclick="openNotes()">Open</button>
+        </div>
+
+        <div class="card fadeIn" style="animation-delay:.22s">
+          <div class="icon"><img src="icons/pyqp.png" style="width:60px;height:60px;"></div>
+          <div style="flex:1"><h3>Question Papers</h3><p class="muted">PYQS AND IMP Question</p></div>
+          <button class="cardBtn" onclick="window.location.href='Pyqp.html'">Open</button>
+        </div>
+
+        <div class="card fadeIn" style="animation-delay:.1s">
+          <div class="icon"><img src="icons/timetable.png" style="width:60px;height:60px;"></div>
+          <div style="flex:1"><h3>Time Table</h3><p class="muted">Tap to view your class timetable</p></div>
+          <button class="cardBtn" onclick="window.location.href='timetable.html'">View</button>
+        </div>
+
+        <div class="card fadeIn" style="animation-delay:.15s">
+          <div class="icon"><img src="icons/marketplace.png" style="width:60px;height:60px;"></div>
+          <div style="flex:1"><h3>Marketplace</h3><p class="muted">Buy & sell student items</p></div>
+          <button class="cardBtn" onclick="window.location.href='https://writershub.infinityfreeapp.com/marketplace/marketplace/marketplace.html'">Open</button>
+        </div>
+
+        <div class="card fadeIn" style="animation-delay:.20s">
+          <div class="icon"><img src="icons/writershub.png" style="width:60px;height:60px;"></div>
+          <div style="flex:1"><h3>Writers Hub</h3><p class="muted">Find writers & writing services</p></div>
+          <button class="cardBtn" onclick="window.open('https://writershub.infinityfreeapp.com/index.php','_blank')">Open</button>
+        </div>
+
+        <div class="card fadeIn" style="animation-delay:.25s">
+          <div class="icon"><img src="icons/feedback.png" style="width:60px;height:60px;"></div>
+          <div style="flex:1"><h3>Feedback</h3><p class="muted">Send feedback & rating</p></div>
+          <button class="cardBtn" onclick="window.location.href='Feedback.html'">Open</button>
+        </div>
+
+      </div>
+      <div class="ocean-footer">
+        © 2026 <strong style="color:var(--text)">Study Matrix</strong> • All Rights Reserved &nbsp;|&nbsp;
+        <a href="Privacypolicy.html">Privacy Policy</a>
+      </div>
+    </section>
+
+    <!-- NOTES: YEAR -->
+    <section id="notes_year" class="notesView">
+      <div style="height:8px"></div>
+      <h2 class="notesTitle">Engineering Notes</h2>
+      <p style="color:var(--muted)">Select Year</p>
+      <div class="folderBox">
+        <div class="folderItem" onclick="openYearNotes(1)">📁 1st Year</div>
+        <div class="folderItem" onclick="openYearNotes(2)">📁 2nd Year</div>
+        <div class="folderItem" onclick="openYearNotes(3)">📁 3rd Year</div>
+        <div class="folderItem" onclick="openYearNotes(4)">📁 4th Year</div>
+      </div>
+    </section>
+
+    <!-- NOTES: CYCLE -->
+    <section id="notes_cycle" class="notesView">
+      <div style="height:8px"></div>
+      <h2 id="title_year" class="notesTitle"></h2>
+      <div id="cycleBox" class="folderBox"></div>
+    </section>
+
+    <!-- NOTES: SUBJECT -->
+    <section id="notes_subject" class="notesView">
+      <div style="height:8px"></div>
+      <h2 id="title_cycle" class="notesTitle"></h2>
+      <div id="subjectBox" class="folderBox"></div>
+    </section>
+
+    <!-- NOTES: CHAPTER -->
+    <section id="notes_chapter" class="notesView">
+      <div style="height:8px"></div>
+      <h2 id="title_subject" class="notesTitle"></h2>
+      <div id="chapterBox" class="folderBox"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- NOTIFICATION POPUP -->
+<div id="notifPopup" style="position:fixed;bottom:-100%;left:0;width:100%;height:60%;background:#041018;border-top-left-radius:20px;border-top-right-radius:20px;box-shadow:0 -5px 30px rgba(0,0,0,0.6);transition:bottom .4s cubic-bezier(0.4,0,0.2,1);z-index:100000;display:flex;flex-direction:column;padding:20px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h3 style="color:#00eaff;">Notifications</h3>
+    <button onclick="closeNotif()" style="background:#00eaff;color:black;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;">Close</button>
+  </div>
+  <div id="popupNotifList" style="margin-top:15px;overflow-y:auto;flex:1;"></div>
+</div>
+
+<!-- FULLSCREEN IMAGE POPUP -->
+<div id="imgPopup" style="display:none;position:fixed;inset:0;background:black;z-index:9999;overflow:auto;text-align:center;">
+  <button onclick="closePopup()" style="position:fixed;top:20px;right:20px;background:#00ffff;color:black;padding:10px 15px;border:none;border-radius:8px;font-size:18px;z-index:10000;cursor:pointer;">✖</button>
+  <div style="height:100vh;display:flex;align-items:center;justify-content:center;">
+    <img id="popupImg" style="max-width:95vw;max-height:90vh;width:auto;height:auto;transition:.3s;touch-action:pinch-zoom;">
+  </div>
+</div>
+
+<script>
+  /* ── OFFLINE REDIRECT ── */
+  var _wentOffline = false;
+  window.addEventListener('offline', function() {
+    if (_wentOffline) return;
+    _wentOffline = true;
+    setTimeout(function() { window.location.href = 'Nointernet.html'; }, 300);
+  });
+
+  /* ── ELEMENT REFS ── */
+  var menuBtn    = document.getElementById('menuBtn');
+  var menuFolder = document.getElementById('menuFolder');
+  var aboutBtn   = document.getElementById('aboutFolderBtn');
+  var aboutModal = document.getElementById('aboutModal');
+  var backBtn    = document.getElementById('backBtn');
+
+  /* ── MENU / ABOUT ── */
+  menuBtn.addEventListener('click', function() {
+    menuFolder.style.display = menuFolder.style.display === 'block' ? 'none' : 'block';
+  });
+  if (aboutBtn) aboutBtn.addEventListener('click', function() {
+    menuFolder.style.display = 'none';
+    aboutModal.style.display = 'block';
+    smPush('about');
+  });
+  function closeAbout() { aboutModal.style.display = 'none'; }
+
+  document.addEventListener('click', function(e) {
+    if (menuFolder && !menuFolder.contains(e.target) && !menuBtn.contains(e.target))
+      menuFolder.style.display = 'none';
+  });
+
+  /* ── HELPERS ── */
+  function hideAll() {
+    ['homeView','notes_year','notes_cycle','notes_subject','notes_chapter']
+      .forEach(function(id) { var e=document.getElementById(id); if(e) e.style.display='none'; });
+    backBtn.style.display = 'none';
+    menuFolder.style.display = 'none';
+    aboutModal.style.display = 'none';
+  }
+  function isVisible(el) { return el && getComputedStyle(el).display !== 'none'; }
+
+  /* ── NAVIGATION ── */
+  function goHome() {
+    hideAll();
+    document.getElementById('homeView').style.display = 'flex';
+    backBtn.style.display = 'none';
+  }
+  function openNotes() {
+    hideAll();
+    document.getElementById('notes_year').style.display = 'block';
+    backBtn.style.display = 'inline-block';
+    smPush('notes_year');
+  }
+
+  /* ── IMAGE POPUP ── */
+  function openFullscreen(src) {
+    document.getElementById('popupImg').src = src;
+    document.getElementById('imgPopup').style.display = 'block';
+    smPush('imgPopup');
+  }
+  function closePopup() { document.getElementById('imgPopup').style.display = 'none'; }
+
+  /* ── BACK HANDLER ── */
+  function handleBack() {
+    if (isVisible(document.getElementById('notes_chapter'))) { backToSubjectNotes(); return; }
+    if (isVisible(document.getElementById('notes_subject'))) { backToCycleNotes();   return; }
+    if (isVisible(document.getElementById('notes_cycle')))   { backToYearNotes();    return; }
+    if (isVisible(document.getElementById('notes_year')))    { goHome();             return; }
+    goHome();
+  }
+  backBtn.onclick = handleBack;
+
+  /* ── NOTES NAVIGATION ── */
+  var notesState = { year: 0, cycle: '', subject: '' };
+
+  function openYearNotes(y) {
+    notesState.year = y;
+    hideAll();
+    document.getElementById('notes_cycle').style.display = 'block';
+    document.getElementById('title_year').innerText = y + (y===1?'st':y===2?'nd':y===3?'rd':'th') + ' Year';
+    var box = document.getElementById('cycleBox');
+    box.innerHTML = '';
+    if (y===1) {
+      box.innerHTML='<div class="folderItem" onclick="openCycleNotes(\'P-Cycle\')">📁 Physics Cycle</div><div class="folderItem" onclick="openCycleNotes(\'C-Cycle\')">📁 Chemistry Cycle</div>';
+    } else if (y===2) {
+      box.innerHTML='<div class="folderItem" onclick="openCycleNotes(\'3rd Semester\')">📁 3rd Semester</div><div class="folderItem" onclick="openCycleNotes(\'4th Semester\')">📁 4th Semester</div>';
+    } else if (y===3) {
+      box.innerHTML='<div class="folderItem" onclick="openCycleNotes(\'5th Semester\')">📁 5th Semester</div><div class="folderItem" onclick="openCycleNotes(\'6th Semester\')">📁 6th Semester</div>';
+    } else if (y===4) {
+      box.innerHTML='<div class="folderItem" onclick="openCycleNotes(\'7th Semester\')">📁 7th Semester</div><div class="folderItem" onclick="openCycleNotes(\'8th Semester\')">📁 8th Semester</div>';
+    }
+    backBtn.style.display = 'inline-block';
+    smPush('notes_cycle');
+  }
+
+  function openCycleNotes(cycle) {
+    notesState.cycle = cycle;
+    hideAll();
+    document.getElementById('notes_subject').style.display = 'block';
+    document.getElementById('title_cycle').innerText = cycle;
+    var sb = document.getElementById('subjectBox');
+    sb.innerHTML = '';
+    if (cycle==='P-Cycle') {
+      sb.innerHTML='<div class="folderItem" onclick="openSubjectNotes(\'Calculus & Linear Algebra\')">📘 Calculus & Linear Algebra</div><div class="folderItem" onclick="openSubjectNotes(\'Engineering Physics\')">📘 Engineering Physics</div><div class="folderItem" onclick="openSubjectNotes(\'Basic Electronics Engineering\')">📘 Basic Electronics Engineering</div><div class="folderItem" onclick="openSubjectNotes(\'Programming with C\')">📘 Programming with C</div><div class="folderItem" onclick="openSubjectNotes(\'Basic Civil Engineering\')">📘 Basic Civil Engineering</div><div class="folderItem" onclick="openSubjectNotes(\'C Programming Lab\')">📘 C Programming Lab</div><div class="folderItem" onclick="openSubjectNotes(\'Computer Aided Engineering Drawing\')">📘 CAED</div><div class="folderItem" onclick="openSubjectNotes(\'Universal Human Values\')">📘 UHV</div>';
+    } else if (cycle==='C-Cycle') {
+      sb.innerHTML='<div class="folderItem" onclick="openSubjectNotes(\'Advanced Calculus & Numerical Methods\')">📘 Advanced Calculus & Numerical Methods</div><div class="folderItem" onclick="openSubjectNotes(\'Engineering Chemistry\')">📘 Engineering Chemistry</div><div class="folderItem" onclick="openSubjectNotes(\'Basic Mechanical Engineering\')">📘 Basic Mechanical Engineering</div><div class="folderItem" onclick="openSubjectNotes(\'Basic Electrical Engineering\')">📘 Basic Electrical Engineering</div><div class="folderItem" onclick="openSubjectNotes(\'Programming with Python\')">📘 Programming with Python</div><div class="folderItem" onclick="openSubjectNotes(\'Python Programming Lab\')">📘 Python Programming Lab</div><div class="folderItem" onclick="openSubjectNotes(\'C Programming Lab\')">📘 C Programming Lab</div>';
+    }
+    backBtn.style.display = 'inline-block';
+    smPush('notes_subject');
+  }
+
+  function backToYearNotes()    { hideAll(); document.getElementById('notes_year').style.display='block'; backBtn.style.display='inline-block'; smPush('notes_year'); }
+  function backToCycleNotes()   { hideAll(); document.getElementById('notes_cycle').style.display='block'; backBtn.style.display='inline-block'; smPush('notes_cycle'); }
+  function backToSubjectNotes() { hideAll(); document.getElementById('notes_subject').style.display='block'; backBtn.style.display='inline-block'; smPush('notes_subject'); }
+
+  function openSubjectNotes(subject) {
+    notesState.subject = subject;
+    hideAll();
+    backBtn.style.display = 'inline-block';
+    document.getElementById('notes_chapter').style.display = 'block';
+    document.getElementById('title_subject').innerText = subject;
+    var cb = document.getElementById('chapterBox');
+    cb.innerHTML = '';
+    var chapters = [], folderPath = 'notes/';
+
+    if (subject==='Calculus & Linear Algebra'){folderPath='notes/1st-Year/P-Cycle/Calculus-and-Linear-Algebra/';chapters=[{name:"Differential Calculus",file:"Differential-Calculus.pdf"},{name:"Linear Algebra",file:"Linear-Algebra.pdf"},{name:"Partial Differentiation – I",file:"Partial-Differentiation-I.pdf"},{name:"Partial Differentiation – II",file:"Partial-Differentiation-II.pdf"},{name:"Ordinary Differential Equations",file:"Ordinary-Differential-Equations.pdf"}];}
+    else if (subject==='Engineering Physics'){chapters=[{name:"Unit 1",drive:"https://drive.google.com/file/d/13ly2v-KhWe5f-6p11rr2wkB2eb_PMGiQ/view?usp=drivesdk"},{name:"Unit 2",drive:"https://drive.google.com/file/d/1Kh6u_-cXFFYrTtDGlKGfz44TnzQqr5Ld/view?usp=drivesdk"},{name:"Unit 3 AND 4",drive:"https://drive.google.com/file/d/1CZN1qCY8xDhEzChkQo5vmTKAIhQC39MP/view?usp=drivesdk"},{name:"Unit 5",drive:"YOUR_DRIVE_LINK_UNIT4"}];}
+    else if (subject==='C Programming Lab'){folderPath='notes/1st-Year/P-Cycle/C-Programming-Lab/';chapters=[{name:"Lab Manual",file:"Lab-Manual.pdf"}];}
+    else if (subject==='Basic Electronics Engineering'){folderPath='notes/1st-Year/P-Cycle/Basic-Electronics/';chapters=[{name:"Semiconductor Diode",file:"Semiconductor-Diode.pdf"},{name:"BJT",file:"BJT.pdf"},{name:"Operational Amplifier",drive:"https://drive.google.com/file/d/1VxGOxcdSsK4DyvcjWP2Xng4zVGX04H_2/view?usp=drivesdk"},{name:"Amplifier Oscillators",file:"Amplifiers-and-Oscillators.pdf"},{name:"Digital Electronics",drive:"https://drive.google.com/file/d/1KwdXTmo_kbApUOlK-aO7QJBySssDDEO5/view?usp=drivesdk"}];}
+    else if (subject==='Programming with C'){folderPath='notes/1st-Year/P-Cycle/Programming-with-C/';chapters=[{name:"Overview of C",file:"Overview-of-C.pdf"},{name:"Decision Making & Branching",file:"Decision-Making-and-Branching.pdf"},{name:"Arrays",file:"Arrays.pdf"},{name:"Functions",file:"UNIT 4 PPS by Shamsiya.pdf"},{name:"Pointers",file:"UNIT 5 PPS by Shamsiya.pdf"}];}
+    else if (subject==='Basic Civil Engineering'){folderPath='notes/1st-Year/P-Cycle/Basic-Civil/';chapters=[{name:"UNIT 1",drive:"https://drive.google.com/file/d/12Slj-eTQs45bWXX6S-Im-6d5O4YujPt2/view?usp=drivesdk"},{name:"UNIT 2",file:"Force-System.pdf"},{name:"UNIT 3",file:"Module 3- Equilibrium.pdf"},{name:"UNIT 4",drive:"https://drive.google.com/file/d/1RZ3UN_cdgnmdwCP8Gpt2mqzuoM2wBFLJ/view?usp=drivesdk"},{name:"UNIT 5",drive:"https://drive.google.com/file/d/1jWZhBdjPFcimQAiQROLYx0r3mTKfLs_d/view?usp=drivesdk"}];}
+    else if (subject==='Computer Aided Engineering Drawing'){folderPath='notes/1st-Year/P-Cycle/CAED/';chapters=[{name:"Full CAED",drive:"https://drive.google.com/file/d/1ff9joD0MUwONFUqLt4NJ5f_psbBBUBrH/view?usp=drivesdk"}];}
+    else if (subject==='Advanced Calculus & Numerical Methods'){chapters=[{name:"Unit 1",drive:""},{name:"Unit 2",drive:""},{name:"Unit 3",drive:""},{name:"Unit 4",drive:""},{name:"Unit 5",drive:""}];}
+    else if (subject==='Engineering Chemistry'){chapters=[{name:"Unit 1",drive:"https://drive.google.com/file/d/1A0rbj_CObR2j6UhEnsUR255OMdn-t2wl/view?usp=drivesdk"},{name:"Unit 2",drive:"https://drive.google.com/file/d/1mkpGRQYb0YJkqGg48Ny-np0UDuI9gGn4/view?usp=drivesdk"},{name:"Unit 3",drive:""},{name:"Unit 4",drive:""},{name:"Unit 5",drive:""}];}
+    else if (subject==='Basic Mechanical Engineering'){chapters=[{name:"Unit 1",drive:"https://drive.google.com/file/d/1eI7IaF_Pbp2-gYR11Cc62YGEB-gvCkWA/view?usp=drivesdk"},{name:"Unit 2",drive:"https://drive.google.com/file/d/1MWrDAafdAjloLzIHZXwjv-q1uQbZwiYJ/view?usp=drivesdk"},{name:"Unit 3",drive:"https://drive.google.com/file/d/1ChT9UmiyLASHaWaikNp5-OrrHhiSMCXQ/view?usp=drivesdk"},{name:"Unit 4",drive:"https://drive.google.com/file/d/1xMYOQaer1if3ywDFhO91jZvpyWPfZr6s/view?usp=drivesdk"},{name:"Unit 5",drive:"https://drive.google.com/file/d/121Cx8QWgd8ECi6NklPJWtH0smg9OpOYU/view?usp=drivesdk"}];}
+    else if (subject==='Basic Electrical Engineering'){chapters=[{name:"Unit 1",drive:"https://drive.google.com/file/d/1cPw-y8gUBxKu-9fADwUb1wCL3-eyIIsY/view?usp=drivesdk"},{name:"Unit 2",drive:"https://drive.google.com/file/d/1UlY_8GSdFZWoxOm6m2TG7Ea7yUBD5j3j/view?usp=drivesdk"},{name:"Unit 3",drive:"https://drive.google.com/file/d/1KibZZPxX4AVmybHPN6tHMDIdQ__4E_S_/view?usp=drivesdk"},{name:"Unit 4",drive:"https://drive.google.com/file/d/1kc1z2h0EBB63brW2B6uUZu5f-tOKA1uJ/view?usp=drivesdk"},{name:"Unit 5",drive:"https://drive.google.com/file/d/1fu7JyMGgnxuifw2dNBmHvjNA15W5zLG8/view?usp=drivesdk"}];}
+    else if (subject==='Programming with Python'){chapters=[{name:"Unit 1",drive:""},{name:"Unit 2",drive:""},{name:"Unit 3",drive:""},{name:"Unit 4",drive:""},{name:"Unit 5",drive:""}];}
+    else if (subject==='Python Programming Lab'){chapters=[{name:"Lab Manual",drive:"https://drive.google.com/file/d/1X7eTZoq3vo8WXuYitAjBFqb-PlufRwXs/view?usp=drivesdk"}];}
+    else{chapters=[{name:"Coming Soon",file:"Coming-Soon.pdf"}];}
+
+    var html='';
+    chapters.forEach(function(ch){
+      if(ch.drive&&ch.drive.trim()!==''){html+='<div class="folderItem" onclick="window.open(\''+ch.drive+'\',\'_blank\')">📄 '+ch.name+'</div>';}
+      else if(ch.file){html+='<div class="folderItem" onclick="openPdf(\''+folderPath+ch.file+'\')">📄 '+ch.name+'</div>';}
+      else{html+='<div class="folderItem" style="opacity:.6;">📄 '+ch.name+' (Coming Soon)</div>';}
+    });
+    cb.innerHTML = html;
+    smPush('notes_chapter');
+  }
+
+  function openPdf(path) { window.location.href = window.location.origin + '/' + path; }
+
+  /* ── NOTIFICATION USER ID ── */
+  var userId = localStorage.getItem('user_id') || ('user_' + Math.random().toString(36).substr(2,9));
+  localStorage.setItem('user_id', userId);
+
+  /* ── TOPBAR SPACING FIX ── */
+  (function() {
+    function fix() {
+      var t=document.querySelector('.topbar'), m=document.querySelector('.main');
+      if(t){t.style.position='fixed';t.style.top='0';t.style.height='62px';t.style.paddingTop='0';t.style.marginTop='0';}
+      if(m){m.style.paddingTop='72px';}
+      document.body.style.paddingTop='0'; document.body.style.marginTop='0';
+      document.documentElement.style.paddingTop='0';
+      var mf=document.getElementById('menuFolder');
+      if(mf){var sh=Math.min(Math.max(window.screenTop||0,window.screenY||0),119);mf.style.top='calc(62px + '+sh+'px)';}
+    }
+    fix();
+    window.addEventListener('resize',fix);
+    window.addEventListener('orientationchange',function(){setTimeout(fix,100);});
+  })();
+
+  /* ── SYSTEM BACK NAVIGATION ── */
+  var _depth = 0;
+  function smPush(state) { history.pushState({ sm: state, d: ++_depth }, ''); }
+  smPush('home'); // initial state
+
+  window.addEventListener('popstate', function() {
+    if (aboutModal && aboutModal.style.display === 'block') { closeAbout(); smPush('home'); return; }
+    if (document.getElementById('imgPopup').style.display === 'block') { closePopup(); smPush('current'); return; }
+    if (document.getElementById('notifPopup').style.bottom === '0px') { closeNotif(); smPush('home'); return; }
+    // Notes back
+    if (isVisible(document.getElementById('notes_chapter'))) { backToSubjectNotes(); return; }
+    if (isVisible(document.getElementById('notes_subject'))) { backToCycleNotes(); return; }
+    if (isVisible(document.getElementById('notes_cycle')))   { backToYearNotes(); return; }
+    if (isVisible(document.getElementById('notes_year')))    { goHome(); smPush('home'); return; }
+    // On home — exit app (let browser handle)
+  });
+
+  // Start on home view
+  goHome();
+</script>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyBalHEO3Hn44955gitMZMvVbCU4dqHiEnU",authDomain:"studymatrix360.firebaseapp.com",
+  databaseURL:"https://studymatrix360-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"studymatrix360",storageBucket:"studymatrix360.firebasestorage.app",
+  messagingSenderId:"154185638216",appId:"1:154185638216:web:eb714b8b339c4fca16d37d",measurementId:"G-F6206WC533"
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const q=query(collection(db,"notifications"),orderBy("createdAt","desc"));
+const bellCount=document.getElementById("bellCount");
+const popupNotifList=document.getElementById("popupNotifList");
+let lastSeen=Number(localStorage.getItem("lastSeenNotif")||0);
+let latestTime=0;
+
+onSnapshot(q,(snapshot)=>{
+  popupNotifList.innerHTML="";let count=0;latestTime=0;
+  snapshot.forEach(doc=>{
+    const data=doc.data();
+    if(data.status==="active"){
+      const t=data.createdAt?.seconds||0;
+      if(t>lastSeen)count++;
+      if(t>latestTime)latestTime=t;
+      popupNotifList.innerHTML+=`<div style="padding:10px;border-bottom:1px solid #00eaff22;margin-bottom:8px;line-height:1.6;font-size:14px;">${data.message.replace(/\n/g,"<br>").replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" style="color:#00eaff;text-decoration:underline;">$1</a>')}</div>`;
+    }
+  });
+  bellCount.style.display=count>0?"block":"none";
+  if(count>0)bellCount.innerText=count;
+});
+
+const bellBtn=document.getElementById("bellContainer");
+const notifPopup=document.getElementById("notifPopup");
+bellBtn.onclick=()=>{
+  notifPopup.style.bottom="0";bellCount.style.display="none";
+  localStorage.setItem("lastSeenNotif",latestTime);lastSeen=latestTime;
+};
+window.closeNotif=function(){notifPopup.style.bottom="-100%";};
+notifPopup.addEventListener("click",(e)=>{if(e.target===notifPopup)closeNotif();});
+</script>
+
+</body>
+</html>
